@@ -4,7 +4,7 @@ A responsive static web app for measuring painting surfaces and preparing Tektac
 
 ## Get started
 
-Open `index.html` in a modern browser. Enter measurement dimensions in feet and deductions in SFT. Click **Add to quotation**, check or edit the rates and scope, enter client details, then click **Print / Save PDF** and select the browser's **Save as PDF** option. Choose A4 paper. Export a JSON backup for storage or for transferring drafts to another device.
+Open `docs/index.html` in a modern browser. Enter measurement dimensions in feet and deductions in SFT. Click **Add to quotation**, check or edit the rates and scope, enter client details, then click **Print / Save PDF** and select the browser's **Save as PDF** option. Choose A4 paper. Export a JSON backup for storage or for transferring drafts to another device.
 
 ### Features
 - Measurement rows: length × height/width × count − deduction; manually add as many rooms/surfaces as needed.
@@ -24,8 +24,8 @@ Open `index.html` in a modern browser. Enter measurement dimensions in feet and 
 - `styles.css` desktop/mobile and print styles
 - `test.js` arithmetic regression tests
 
-Run `node test.js` to verify calculations. Open the app locally, load reference sample and verify the sample quotation preview and PDF print.
+Run `node docs/test.js` from the repository root to verify calculations. Open the app locally, load reference sample and verify the sample quotation preview and PDF print.
 
 ## Deployment
 
-Host all files together on GitHub Pages (Settings → Pages → Deploy from branch). The app uses relative paths, so GitHub project URLs work without configuration.
+This repository keeps the quotation app in `docs/`, leaving the root available for future Tektact website development. To publish on GitHub Pages: open **Settings → Pages → Build and deployment → Deploy from a branch**, choose **main** and **/docs**, then click **Save**. Once GitHub confirms the site is deployed, the expected URL is `https://wizvikram.github.io/tektact-website/`. GitHub Pages must be enabled by the repository owner; committing code alone does not automatically enable it.
