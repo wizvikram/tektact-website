@@ -13,7 +13,7 @@
   <div class="topline"></div>
   <header class="app-header">
     <div class="brand"><img id="headerLogo" src="tektact-logo.webp" alt="Tektact logo"><div><strong>TEKTACT <span>STUDIO</span></strong><small>Painting calculator & quotation maker</small></div></div>
-    <div class="header-actions"><span class="status" id="saveStatus">Saved on this device</span><button type="button" class="btn ghost" id="exportJson">Export backup</button><button type="button" class="btn ghost" id="importJson">Import backup</button><button type="button" class="btn primary" id="printQuote">Print / Save PDF ↗</button></div>
+    <div class="header-actions"><span class="status" id="saveStatus">Saved on this device</span><button type="button" class="btn ghost" id="exportJson">Export backup</button><button type="button" class="btn ghost" id="importJson">Import backup</button><button type="button" class="btn primary" id="downloadExcel">Download Excel (.xlsx) ↗</button><button type="button" class="btn ghost" id="printQuote">Print / PDF</button></div>
   </header>
   <main class="workspace">
     <div class="intro"><div><span class="eyebrow">TEKTACT BUSINESS TOOLS</span><h1>Estimate confidently.<br><em>Quote beautifully.</em></h1><p>Measure painting areas, price every service, and make client-ready quotations with your brand.</p></div><div class="intro-chip"><b id="quickTotal">₹0</b><small>Current quotation</small></div></div>
@@ -33,7 +33,7 @@
         </section>
         <section class="panel" aria-labelledby="termsHeading"><div class="panel-head"><div><span class="step">04 · FINALIZE</span><h2 id="termsHeading">Brand & payment terms</h2></div></div>
           <div class="form-grid"><label>Company name<input data-field="company" maxlength="140"></label><label>Phone<input data-field="phone" maxlength="60"></label><label>Email<input data-field="email" maxlength="120"></label><label>Website<input data-field="website" maxlength="120"></label><label class="span2">Registered address<textarea data-field="address" rows="2" maxlength="300"></textarea></label><label>Quotation validity (days)<input data-field="validity" type="number" min="1" max="365" step="1"></label><label>Payment schedule<input data-field="payment" maxlength="220"></label><label class="span2">Additional terms, one per line<textarea data-field="terms" rows="4" maxlength="1600"></textarea></label><label class="span2">Company logo (optional replacement)<input type="file" id="logoUpload" accept="image/png,image/jpeg,image/webp"><span class="hint">Your sample quotation logo is included. New uploads stay in this browser.</span></label></div>
-          <div class="footer-actions"><button type="button" class="btn ghost" id="newQuote">Start new quotation</button><button type="button" class="btn outline" id="loadSample">Load reference sample</button><button type="button" class="btn primary" id="printQuoteBottom">Print / Save PDF ↗</button></div>
+          <div class="footer-actions"><button type="button" class="btn ghost" id="newQuote">Start new quotation</button><button type="button" class="btn outline" id="loadSample">Load reference sample</button><button type="button" class="btn primary" id="downloadExcelBottom">Download Excel (.xlsx) ↗</button><button type="button" class="btn outline" id="printQuoteBottom">Print / PDF</button></div>
           <p class="privacy">🔒 Work is saved only in this browser (local storage). Export a backup to move it to another device. Verify tax applicability and final site measurements.</p>
         </section>
       </div>
@@ -45,10 +45,10 @@
         <p class="amount-words"><b>Amount in words:</b> <span id="printWords"></span></p>
         <div class="print-terms"><h3>TERMS & CONDITIONS</h3><ol id="printTerms"></ol></div>
         <footer class="doc-footer"><strong id="printCompany"></strong><span id="printAddress"></span><span id="printContacts"></span></footer>
-      </article></div><div class="preview-tip">Browser print → choose <b>Save as PDF</b>. Use A4, default margins and enable background graphics for best results.</div></aside>
+      </article></div><div class="preview-tip">Download an editable Excel workbook or use browser print to save an A4 PDF.</div></aside>
     </div>
   </main>
   <input type="file" id="jsonUpload" accept="application/json,.json" hidden>
-  <script src="core.js"></script><script src="app.js"></script>
+  <script src="core.js"></script><script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script><script src="app.js"></script>
 </body>
 </html>
