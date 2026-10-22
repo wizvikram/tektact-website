@@ -256,13 +256,15 @@
     XLSX.utils.book_append_sheet(wb,sheet,'Quotation');
     const measure=[['TEKTACT | PAINTING AREA CALCULATOR'],[],['#','Room / surface','Length (ft)','Height (ft)','Count','Deduction (SFT)','Net SFT']];
     const count=Math.max(20,state.measurements.length);
+    let totalMeasured=0;
     for(let i=0;i<count;i++){
       const r=i+4,entry=state.measurements[i];
       let v=0;
       try {if(entry)v=core.rectangleArea(entry);}catch(e){}
+      totalMeasured+=v;
       measure.push([i+1,entry?.name||'',entry?Number(entry.length):'',entry?Number(entry.width):'',entry?Number(entry.count):'',entry?Number(entry.deduction||0):'',formula(`IF(OR(C${r}="",D${r}="",E${r}=""),"",MAX(0,ROUND(C${r}*D${r}*E${r}-IF(F${r}="",0,F${r}),2)))`,v)]);
     }
-    measure.push([],['','TOTAL MEASURED AREA','','','', '',formula(`SUM(G4:G${count+3})`,0)]);
+    measure.push([],['','TOTAL MEASURED AREA','','','', '',formula(`SUM(G4:G${count+3})`,totalMeasured)]);
     const ms=XLSX.utils.aoa_to_sheet(measure);
     ms['!cols']=[{wch:7},{wch:34},{wch:17},{wch:17},{wch:12},{wch:19},{wch:19}];
     XLSX.utils.book_append_sheet(wb,ms,'Measurements');
