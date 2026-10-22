@@ -195,6 +195,95 @@
   });
   function printQuote() {const errors=updatePreview();if(errors.length){alert('Correct these issues before printing:\n'+errors.join('\n'));return;}window.print();}
   $('printQuote').addEventListener('click',printQuote);$('printQuoteBottom').addEventListener('click',printQuote);
+  function exportTektactExcel() {
+  if (!window.XLSX) {
+    alert('Excel export library did not load. Check your internet connection and retry. PDF export is still available.');
+    return;
+  }
+  const core = window.TektactCore;
+  const totals = core.calculateQuote(state.items, {mode:state.discountMode,value:state.discountValue},state.taxRate);
+  if(totals.errors.length) {
+    alert('Correct quotation calculations first:\n'+totals.errors.join('\n'));
+    return;
+  }
+  try {
+    const XLSX=window.XLSX;
+    const wb=XLSX.utils.book_new();
+    const data=[];
+    const set=(r,c,v)=>{if(!data[r-1])data[r-1]=[];data[r-1][c-1]=v;};
+    const sum=big=>Number(big)/100;
+    const formula=(f,v)=>({t:'n',f,v});
+    set(1,1,'TEKTACT | PAINTING QUOTATION');
+    set(2,1,state.company||'Tektact Consultants & Contractors');
+    set(4,1,'Quotation no.');set(4,2,state.quoteNo);
+    set(4,4,'Date');set(4,5,state.date);
+    set(5,1,'Client');set(5,2,state.client);
+    set(6,1,'Kind attention');set(6,2,state.attention);
+    set(7,1,'Project / site');set(7,2,state.site);
+    ['#','Service','Specifications / scope','Unit','Quantity','Rate (₹)','Amount (₹)'].forEach((h,i)=>set(9,i+1,h));
+    const slots=Math.max(16,state.items.length),end=9+slots;
+    for(let i=0;i<slots;i++){
+      const row=i+10,it=state.items[i];
+      if(it){
+        set(row,1,i+1);set(row,2,it.title);set(row,3,it.desc);set(row,4,it.unit);
+        set(row,5,Number(it.qty));set(row,6,Number(it.rate));
+      }
+      set(row,7,formula(`IF(OR(E${row}="",F${row}=""),"",ROUND(E${row}*F${row},2))`,it?sum(totals.lineAmounts[i]):0));
+    }
+    const sub=end+2,dis=end+3,taxRate=end+4,taxAmount=end+5,grand=end+6;
+    set(sub,6,'Subtotal');set(sub,7,formula(`SUM(G10:G${end})`,sum(totals.subtotal)));
+    set(dis,6,'Discount (₹)');set(dis,7,sum(totals.discount));
+    set(taxRate,6,'Tax rate (%)');set(taxRate,7,Number(state.taxRate));
+    set(taxAmount,6,'Tax');set(taxAmount,7,formula(`ROUND(MAX(0,G${sub}-G${dis})*G${taxRate}/100,2)`,sum(totals.tax)));
+    set(grand,6,'GRAND TOTAL');set(grand,7,formula(`G${sub}-G${dis}+G${taxAmount}`,sum(totals.grandTotal)));
+    set(grand+2,1,'Amount in words (MANUALLY update after editing numbers): '+core.amountInWords(totals.grandTotal));
+    set(grand+4,1,'TERMS AND CONDITIONS');
+    const terms=[
+      'Final bill based on joint measurements and agreed amendments.',
+      'Payment: '+state.payment,
+      'Quotation validity: '+state.validity+' days from quotation date.',
+      ...state.terms.split(/\r?\n/).map(s=>s.trim()).filter(Boolean)
+    ];
+    terms.forEach((t,i)=>set(grand+5+i,1,(i+1)+'. '+t));
+    const foot=grand+7+terms.length;
+    set(foot,1,(state.company||'Tektact Consultants & Contractors')+' | REGISTERED OFFICE');
+    set(foot+1,1,state.address);
+    set(foot+2,1,[state.phone,state.website,state.email].filter(Boolean).join('  |  '));
+    const sheet=XLSX.utils.aoa_to_sheet(data);
+    sheet['!cols']=[{wch:7},{wch:29},{wch:71},{wch:9},{wch:13},{wch:15},{wch:19}];
+    sheet['!merges']=[XLSX.utils.decode_range('A1:G1'),XLSX.utils.decode_range(`A${foot}:G${foot}`),XLSX.utils.decode_range(`A${foot+1}:G${foot+1}`),XLSX.utils.decode_range(`A${foot+2}:G${foot+2}`)];
+    for(let i=10;i<=grand;i++)if(sheet[`G${i}`]&&i!==taxRate)sheet[`G${i}`].z='#,##0.00';
+    XLSX.utils.book_append_sheet(wb,sheet,'Quotation');
+    const measure=[['TEKTACT | PAINTING AREA CALCULATOR'],[],['#','Room / surface','Length (ft)','Height (ft)','Count','Deduction (SFT)','Net SFT']];
+    const count=Math.max(20,state.measurements.length);
+    for(let i=0;i<count;i++){
+      const r=i+4,entry=state.measurements[i];
+      let v=0;
+      try {if(entry)v=core.rectangleArea(entry);}catch(e){}
+      measure.push([i+1,entry?.name||'',entry?Number(entry.length):'',entry?Number(entry.width):'',entry?Number(entry.count):'',entry?Number(entry.deduction||0):'',formula(`IF(OR(C${r}="",D${r}="",E${r}=""),"",MAX(0,ROUND(C${r}*D${r}*E${r}-IF(F${r}="",0,F${r}),2)))`,v)]);
+    }
+    measure.push([],['','TOTAL MEASURED AREA','','','', '',formula(`SUM(G4:G${count+3})`,0)]);
+    const ms=XLSX.utils.aoa_to_sheet(measure);
+    ms['!cols']=[{wch:7},{wch:34},{wch:17},{wch:17},{wch:12},{wch:19},{wch:19}];
+    XLSX.utils.book_append_sheet(wb,ms,'Measurements');
+    const notes=XLSX.utils.aoa_to_sheet([
+      ['TEKTACT | COMPANY AND EDITING NOTES'],
+      ['Company',state.company],['Registered address',state.address],['Phone',state.phone],
+      ['Email',state.email],['Website',state.website],['Payment schedule',state.payment],
+      ['Quotation validity (days)',Number(state.validity)],
+      ['Editing guide','Change quantity (E) or rate (F) on Quotation. Amounts and grand total recalculate.'],
+      ['Important','Update the amount in words manually whenever the grand total changes.'],
+      ['Discount','Percentage discounts in the calculator are converted into editable rupee discounts in Excel.'],
+      ['Reference rates','Historical sample prices, not verified current market quotations. Confirm before sending.']
+    ]);
+    notes['!cols']=[{wch:29},{wch:90}];
+    XLSX.utils.book_append_sheet(wb,notes,'Company & Notes');
+    const fname=(state.quoteNo||'draft').replace(/[^a-z0-9_-]/gi,'_');
+    XLSX.writeFile(wb,`Tektact_Quotation_${fname}.xlsx`,{compression:true});
+  }catch(err){alert('Unable to export Excel: '+err.message);}
+}
+  $('downloadExcel').addEventListener('click',exportTektactExcel);
+  $('downloadExcelBottom').addEventListener('click',exportTektactExcel);
   function replaceState(next) {state=normalize(next);save();renderForm();}
   $('loadSample').addEventListener('click',()=>{if(confirm('Load the 14 February 2026 sample quotation? This replaces the current draft (export a backup first if needed).'))replaceState(sampleState());});
   $('newQuote').addEventListener('click',()=>{if(confirm('Start a fresh quotation? Export a backup first if you want to keep the current one.'))replaceState(defaultState());});
