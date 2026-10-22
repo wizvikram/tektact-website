@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#10263b">
+  <title>Tektact | Painting Calculator & Quotation Studio</title>
+  <meta name="description" content="Tektact painting measurement calculator and professional quotation maker. Works locally in your browser.">
+  <link rel="icon" type="image/webp" href="tektact-logo.webp">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="topline"></div>
+  <header class="app-header">
+    <div class="brand"><img id="headerLogo" src="tektact-logo.webp" alt="Tektact logo"><div><strong>TEKTACT <span>STUDIO</span></strong><small>Painting calculator & quotation maker</small></div></div>
+    <div class="header-actions"><span class="status" id="saveStatus">Saved on this device</span><button type="button" class="btn ghost" id="exportJson">Export backup</button><button type="button" class="btn ghost" id="importJson">Import backup</button><button type="button" class="btn primary" id="printQuote">Print / Save PDF ↗</button></div>
+  </header>
+  <main class="workspace">
+    <div class="intro"><div><span class="eyebrow">TEKTACT BUSINESS TOOLS</span><h1>Estimate confidently.<br><em>Quote beautifully.</em></h1><p>Measure painting areas, price every service, and make client-ready quotations with your brand.</p></div><div class="intro-chip"><b id="quickTotal">₹0</b><small>Current quotation</small></div></div>
+    <div class="two-col">
+      <div class="editor">
+        <section class="panel" aria-labelledby="measureHeading">
+          <div class="panel-head"><div><span class="step">01 · MEASURE</span><h2 id="measureHeading">Painting area calculator</h2><p>Length × height/width × count − openings/deductions. Units: feet and SFT.</p></div><button type="button" class="btn small" id="addMeasure">+ Area</button></div>
+          <div class="measure-table-scroll"><table class="edit-table measurement-table"><thead><tr><th>Surface / Room</th><th>Length (ft)</th><th>Height / Width (ft)</th><th>Count</th><th>Deduct SFT</th><th>Net SFT</th><th></th></tr></thead><tbody id="measureRows"></tbody></table></div>
+          <div class="area-bottom"><div><span>Total measured area</span><b id="totalArea">0.00 SFT</b></div><div class="area-transfer"><label for="transferService">Add measured area to quote as</label><select id="transferService"><option value="interior">Interior painting</option><option value="exterior">Exterior painting</option><option value="texture">Wall textures</option><option value="custom">Custom service</option></select><button type="button" class="btn secondary" id="transferArea">Add to quotation ↓</button></div></div><p class="help">Sample rates are historical reference values, not current market quotations. Check actual site measurements and pricing before sending.</p>
+        </section>
+        <section class="panel" aria-labelledby="detailsHeading"><div class="panel-head"><div><span class="step">02 · DETAILS</span><h2 id="detailsHeading">Quotation details</h2></div></div>
+          <div class="form-grid"><label>Quotation number<input data-field="quoteNo" maxlength="60" placeholder="TKT-2026-001"></label><label>Quotation date<input type="date" data-field="date"></label><label>Client name<input data-field="client" maxlength="120" placeholder="Customer / company name"></label><label>Kind attention<input data-field="attention" maxlength="120" placeholder="Contact person"></label><label class="span2">Project / site address<textarea data-field="site" rows="2" maxlength="350" placeholder="Site address in Coimbatore"></textarea></label></div>
+        </section>
+        <section class="panel" aria-labelledby="linesHeading"><div class="panel-head"><div><span class="step">03 · PRICE</span><h2 id="linesHeading">Scope & rates</h2><p>Edit service description, quantity and rate. Amounts update automatically.</p></div><button type="button" class="btn small" id="addLine">+ Service</button></div><div id="quoteLines"></div>
+          <div class="price-controls"><label>Discount<select id="discountMode"><option value="amount">Amount (₹)</option><option value="percent">Percentage (%)</option></select></label><label>Discount value<input id="discountValue" type="number" min="0" step="0.01" value="0"></label><label>Tax rate, if applicable (%)<input id="taxRate" type="number" min="0" max="100" step="0.01" value="0"></label></div>
+          <div class="totals-box"><div><span>Subtotal</span><b id="subTotal">₹0</b></div><div><span>Discount</span><b id="discountDisplay">− ₹0</b></div><div><span>Tax</span><b id="taxDisplay">₹0</b></div><div class="grand"><span>Grand total</span><strong id="grandTotal">₹0</strong></div></div><p class="validation" id="validation" role="alert" hidden></p>
+        </section>
+        <section class="panel" aria-labelledby="termsHeading"><div class="panel-head"><div><span class="step">04 · FINALIZE</span><h2 id="termsHeading">Brand & payment terms</h2></div></div>
+          <div class="form-grid"><label>Company name<input data-field="company" maxlength="140"></label><label>Phone<input data-field="phone" maxlength="60"></label><label>Email<input data-field="email" maxlength="120"></label><label>Website<input data-field="website" maxlength="120"></label><label class="span2">Registered address<textarea data-field="address" rows="2" maxlength="300"></textarea></label><label>Quotation validity (days)<input data-field="validity" type="number" min="1" max="365" step="1"></label><label>Payment schedule<input data-field="payment" maxlength="220"></label><label class="span2">Additional terms, one per line<textarea data-field="terms" rows="4" maxlength="1600"></textarea></label><label class="span2">Company logo (optional replacement)<input type="file" id="logoUpload" accept="image/png,image/jpeg,image/webp"><span class="hint">Your sample quotation logo is included. New uploads stay in this browser.</span></label></div>
+          <div class="footer-actions"><button type="button" class="btn ghost" id="newQuote">Start new quotation</button><button type="button" class="btn outline" id="loadSample">Load reference sample</button><button type="button" class="btn primary" id="printQuoteBottom">Print / Save PDF ↗</button></div>
+          <p class="privacy">🔒 Work is saved only in this browser (local storage). Export a backup to move it to another device. Verify tax applicability and final site measurements.</p>
+        </section>
+      </div>
+      <aside class="preview-panel"><div class="preview-heading"><div><span class="step">LIVE PREVIEW</span><h2>Ready to share</h2></div><span class="a4tag">A4 DOCUMENT</span></div><div class="paper-outer"><article id="quotationSheet" class="paper" aria-label="Quotation document">
+        <div class="quote-top"><div class="quote-brandline"><img id="previewLogo" src="tektact-logo.webp" alt="Tektact logo"><div class="quote-brandname">TEKTACT<span>CONSULTANTS & CONTRACTORS</span></div></div><div class="quote-title"><b>QUOTATION</b><small id="printQuoteNo"></small></div></div>
+        <div class="quote-meta"><div><span class="label">PREPARED FOR</span><strong id="printClient">Customer</strong><span id="printAttention"></span><span id="printSite"></span></div><div class="meta-right"><div><span class="label">DATE</span><b id="printDate"></b></div><div><span class="label">VALIDITY</span><b id="printValidity"></b></div></div></div>
+        <table class="document-table"><thead><tr><th>#</th><th>DESCRIPTION OF SPECIFICATION</th><th>UNIT</th><th>QTY</th><th>RATE</th><th>AMOUNT</th></tr></thead><tbody id="printLines"></tbody></table>
+        <div class="print-totals"><div><span>Subtotal</span><b id="printSubtotal"></b></div><div id="printDiscLine"><span>Discount</span><b id="printDiscount"></b></div><div id="printTaxLine"><span>Tax</span><b id="printTax"></b></div><div class="print-grand"><strong>Grand Total</strong><strong id="printGrand"></strong></div></div>
+        <p class="amount-words"><b>Amount in words:</b> <span id="printWords"></span></p>
+        <div class="print-terms"><h3>TERMS & CONDITIONS</h3><ol id="printTerms"></ol></div>
+        <footer class="doc-footer"><strong id="printCompany"></strong><span id="printAddress"></span><span id="printContacts"></span></footer>
+      </article></div><div class="preview-tip">Browser print → choose <b>Save as PDF</b>. Use A4, default margins and enable background graphics for best results.</div></aside>
+    </div>
+  </main>
+  <input type="file" id="jsonUpload" accept="application/json,.json" hidden>
+  <script src="core.js"></script><script src="app.js"></script>
+</body>
+</html>
