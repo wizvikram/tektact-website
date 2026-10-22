@@ -29,3 +29,7 @@ Run `node docs/test.js` from the repository root to verify calculations. Open th
 ## Deployment
 
 This repository keeps the quotation app in `docs/`, leaving the root available for future Tektact website development. To publish on GitHub Pages: open **Settings → Pages → Build and deployment → Deploy from a branch**, choose **main** and **/docs**, then click **Save**. Once GitHub confirms the site is deployed, the expected URL is `https://wizvikram.github.io/tektact-website/`. GitHub Pages must be enabled by the repository owner; committing code alone does not automatically enable it.
+
+
+### Excel quotation export (October 2026)
+The quotation maker includes **Download Excel (.xlsx)**, with editable client data, service descriptions, quantities, rates, discount, tax, formula-driven totals and a separate measurements sheet. The registered office/contact block appears at the bottom of the quotation sheet. **Update amount in words manually when amounts change.** Excel export on the hosted website loads SheetJS from its official CDN and therefore needs an internet connection for that feature; the main calculator and PDF preview do not.
